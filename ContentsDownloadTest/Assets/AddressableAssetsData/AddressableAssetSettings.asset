@@ -64,9 +64,9 @@ MonoBehaviour:
       - m_Id: 39c6d85d3088c0e45a8b836114218487
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
       - m_Id: b6aa5413e8d557649887361ee0700c40
-        m_Value: ../ServerData/[BuildTarget]
+        m_Value: ../docs/[BuildTarget]
       - m_Id: 77b3abd0793108e45a684bdcd94610b5
-        m_Value: https://E4-Unity/contents-download-test/[BuildTarget]
+        m_Value: https://e4-unity.github.io/contents-download-test/[BuildTarget]
     m_ProfileEntryNames:
     - m_Id: c5b66177069b8f1478847221e8e7ffc5
       m_Name: BuildTarget
