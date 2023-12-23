@@ -8,4 +8,4 @@
 
 ## 시연 영상
 
-![Animation](https://github.com/E4-Unity/contents-download-test/assets/59055049/6b7f7d49-6b27-4e5a-860f-e1be6db47965)
+![Animation](https://github.com/E4-Unity/contents-download-test/assets/59055049/7f6a6b01-d5c7-4f8f-a23e-6d1efdbb2738)
