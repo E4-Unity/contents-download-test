@@ -17,8 +17,8 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 828494e041ae0ec48b3aa40bd75129c6
   m_SerializeEntries:
-  - m_GUID: 5532c52521d21a64c8564cb163dd90bd
-    m_Address: Assets/Player.prefab
+  - m_GUID: 320b1c2af77554f99a1658df4a6d3d5c
+    m_Address: Models/RobotKyle
     m_ReadOnly: 0
     m_SerializedLabels:
     - default
