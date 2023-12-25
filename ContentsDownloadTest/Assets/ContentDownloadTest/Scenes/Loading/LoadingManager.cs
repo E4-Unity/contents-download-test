@@ -1,16 +1,22 @@
-using System.Collections;
+using System;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
+using UnityEngine.Serialization;
 
 public class LoadingManager : MonoBehaviour
 {
     /* Static 필드 */
-    public static string NextScene;
+    static string NextScene = "Lobby";
 
     /* Static 메서드 */
-    public static void LoadScene(string sceneName)
+    public static void LoadScene(string sceneName) => LoadSceneTask(sceneName).Forget();
+
+    static async UniTaskVoid LoadSceneTask(string sceneName)
     {
+        // 씬 전환 전 고정 대기 시간
+        await UniTask.Delay(TimeSpan.FromSeconds(2));
+
         // 전환할 씬 이름 기록
         NextScene = sceneName;
 
@@ -19,50 +25,41 @@ public class LoadingManager : MonoBehaviour
     }
 
     /* 필드 */
-    [SerializeField] Slider m_LoadingBar;
+    [FormerlySerializedAs("m_LoadingUI")]
+    [Header("UI")]
+    [SerializeField] LoadingBar m_LoadingBar;
 
     /* MonoBehaviour */
     void Start()
     {
-        StartCoroutine(LoadingSequence());
+        LoadNextScene();
     }
 
     /* 메서드 */
-    IEnumerator LoadingSequence()
+    void LoadNextScene() => LoadNextSceneTask().Forget();
+    async UniTaskVoid LoadNextSceneTask()
     {
-        yield return null;
-
         // 다음 씬 비동기 로딩 시작
         var op = SceneManager.LoadSceneAsync(NextScene);
 
         // 자동 씬 전환 방지
         op.allowSceneActivation = false;
 
-        float timer = 0f;
-
-        while (!op.isDone)
+        while (!Mathf.Approximately(op.progress, 0.9f))
         {
-            yield return null;
-
-            timer += Time.deltaTime;
-
             // 로딩율 갱신
-            if (op.progress < 0.9f)
-            {
-                // 로딩율 증가를 부드럽게 표현
-                m_LoadingBar.value = Mathf.Lerp(m_LoadingBar.value, op.progress / 0.9f, timer);
-            }
-            else
-            {
-                // 로딩 완료
-                m_LoadingBar.value = 1;
+            m_LoadingBar.Refresh(op.progress / 0.9f);
 
-                // 로딩 완료 후 고정 대기 시간
-                yield return new WaitForSeconds(2f);
-
-                // 씬 전환
-                op.allowSceneActivation = true;
-            }
+            await UniTask.Yield();
         }
+
+        // 로딩 완료
+        m_LoadingBar.Refresh(1);
+
+        // 로딩 완료 후 고정 대기 시간
+        await UniTask.Delay(TimeSpan.FromSeconds(2));
+
+        // 씬 전환
+        op.allowSceneActivation = true;
     }
 }

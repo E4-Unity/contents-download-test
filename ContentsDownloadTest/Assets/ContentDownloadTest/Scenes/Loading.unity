@@ -425,10 +425,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -524,7 +524,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19d0f3dd60e794a41a2de6d742bb913c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LoadingBar: {fileID: 1919602049}
+  m_LoadingBar: {fileID: 1919602050}
 --- !u!1 &1377219386
 GameObject:
   m_ObjectHideFlags: 0
@@ -744,6 +744,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1919602048}
   - component: {fileID: 1919602049}
+  - component: {fileID: 1919602050}
   m_Layer: 5
   m_Name: Loading Bar
   m_TagString: Untagged
@@ -824,6 +825,20 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1919602050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1919602047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14c7b1aa4c0ae9a4abd6221ac7cf1bd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Slider: {fileID: 1919602049}
+  m_Interval: 1
 --- !u!1 &2028746226
 GameObject:
   m_ObjectHideFlags: 0

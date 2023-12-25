@@ -1157,6 +1157,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1487778137}
   - component: {fileID: 1487778138}
+  - component: {fileID: 1487778139}
   m_Layer: 5
   m_Name: Download Bar
   m_TagString: Untagged
@@ -1237,6 +1238,21 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1487778139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1487778136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d464095d230bde34a97aee5ec630bc4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Slider: {fileID: 1487778138}
+  m_Interval: 1
+  m_DownloadRatioText: {fileID: 247883309}
 --- !u!1 &1709667569
 GameObject:
   m_ObjectHideFlags: 0
@@ -1872,9 +1888,8 @@ MonoBehaviour:
   m_CheckingUpdateText: {fileID: 1722229721}
   m_ProcessUpdatePanel: {fileID: 183934503}
   m_DownloadButton: {fileID: 1301744374}
-  m_DownloadBar: {fileID: 1487778138}
   m_FileSizeText: {fileID: 327790414}
-  m_DownloadRatioText: {fileID: 247883309}
+  m_DownloadBar: {fileID: 1487778139}
   m_Labels:
   - m_LabelString: default
 --- !u!1660057539 &9223372036854775807

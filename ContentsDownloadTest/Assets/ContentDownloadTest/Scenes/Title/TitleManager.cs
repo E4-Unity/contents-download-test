@@ -1,7 +1,4 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -14,6 +11,9 @@ public class TitleManager : MonoBehaviour
     const float MegaBytes = 1048576;
     const float KiloBytes = 1024;
 
+    /* 컴포넌트 */
+    DownloadManager m_DownloadManager;
+
     /* 레퍼런스 */
     [Header("Check Update")]
     [SerializeField] GameObject m_CheckingUpdatePanel;
@@ -22,42 +22,51 @@ public class TitleManager : MonoBehaviour
     [Header("Process Update")]
     [SerializeField] GameObject m_ProcessUpdatePanel;
     [SerializeField] Button m_DownloadButton;
-    [SerializeField] Slider m_DownloadBar;
     [SerializeField] TextMeshProUGUI m_FileSizeText;
-    [SerializeField] TextMeshProUGUI m_DownloadRatioText;
+
+    [Header("UI")]
+    [SerializeField] DownloadBar m_DownloadBar;
 
     /* 필드 */
     [Header("Asset Label")]
-    [SerializeField] AssetLabelReference[] m_Labels;
-
-    long m_TotalPatchSize;
-    readonly Dictionary<string, long> m_PatchMap = new Dictionary<string, long>(); // 라벨 별로 다운로드
+    [SerializeField] AssetLabelReference[] m_Labels; // 업데이트 확인이 필요한 모든 라벨
 
     /* MonoBehaviour */
     void Awake()
     {
+        // 라벨 유효성 검사
+        var validLabels = new List<string>(m_Labels.Length);
+        foreach (var label in m_Labels)
+        {
+            if(string.IsNullOrEmpty(label.labelString)) continue;
+            validLabels.Add(label.labelString);
+        }
+
+        // Download Manager 생성
+        m_DownloadManager = new DownloadManager(validLabels);
+
         // 다운로드 버튼 이벤트 바인딩
         m_DownloadButton.onClick.AddListener(OnDownloadButtonClick_Event);
+
+        // 초기화
+        Init();
+
+        // 이벤트 바인딩
+        m_DownloadManager.OnUpdated += OnUpdated_Event;
     }
 
     void Start()
     {
-        // 패널 초기화
-        m_CheckingUpdatePanel.SetActive(true);
-        m_ProcessUpdatePanel.SetActive(false);
-
-        // Addressable 초기화
-        InitAddressable();
-
         // 업데이트 확인
-        CheckUpdate();
+        m_DownloadManager.CheckUpdate();
+        UpdateUI();
     }
 
     /* 이벤트 함수 */
-    public void OnDownloadButtonClick_Event()
+    void OnDownloadButtonClick_Event()
     {
         // 패치 진행
-        Patch();
+        m_DownloadManager.Patch();
 
         // 다운로드 버튼 비활성화
         m_DownloadButton.gameObject.SetActive(false);
@@ -67,120 +76,47 @@ public class TitleManager : MonoBehaviour
     }
 
     /* 메서드 */
-    void InitAddressable() => Addressables.InitializeAsync().WaitForCompletion();
-    void CheckUpdate() => StartCoroutine(CheckUpdateSequence());
-    void Patch()
+    void Init()
     {
-        // 패치 진행
-        StartCoroutine(PatchSequence());
+        // 패널 초기화
+        m_CheckingUpdatePanel.SetActive(true);
+        m_ProcessUpdatePanel.SetActive(false);
 
-        // 패치 진행 상황 확인
-        CheckPatchProgress();
+        // 다운로드 UI 초기화
+        m_DownloadBar.Refresh(0);
     }
 
-    void CheckPatchProgress() => StartCoroutine(CheckPatchProgressSequence());
-    void ChangeLobbyScene() => StartCoroutine(ChangeLobbySceneSequence());
-
-    IEnumerator ChangeLobbySceneSequence()
+    void UpdateUI()
     {
-        // 씬 전환 전 고정 대기 시간
-        yield return new WaitForSeconds(2f);
-
-        // 로비 씬 전환
-        LoadingManager.LoadScene("Lobby");
-    }
-
-    IEnumerator CheckPatchProgressSequence()
-    {
-        m_DownloadRatioText.text = "0 %";
-
-        while (true)
-        {
-            // 총 다운로드된 용량 계산
-            long totalDownloadSize = m_PatchMap.Sum(pair => pair.Value);
-
-            // UI 갱신
-            var downloadRatio = totalDownloadSize / (float)m_TotalPatchSize;
-            m_DownloadBar.value = downloadRatio;
-            m_DownloadRatioText.text = (int)(downloadRatio * 100) + " %";
-
-            // 다운로드 완료 여부 확인
-            if (totalDownloadSize == m_TotalPatchSize)
-            {
-                // 로비 씬 전환
-                ChangeLobbyScene();
-                break;
-            }
-
-            yield return null;
-        }
-    }
-
-    IEnumerator PatchSequence()
-    {
-        // 총 다운로드 파일 사이즈 계산
-        foreach (var label in m_Labels)
-        {
-            // 해당 라벨 파일 패치 확인
-            var handle = Addressables.GetDownloadSizeAsync(label.labelString);
-            yield return handle;
-
-            // 패치 파일 용량 기록
-            if (handle.Result != decimal.Zero)
-            {
-                // 라벨 패치 진행
-                StartCoroutine(DownloadLabelSequence(label.labelString));
-            }
-        }
-    }
-
-    IEnumerator DownloadLabelSequence(string label)
-    {
-        // 패치 맵 초기화
-        m_PatchMap.Add(label, 0);
-
-        // 다운로드 시작
-        var handle = Addressables.DownloadDependenciesAsync(label, false);
-
-        // 다운로드 진행 상황 갱신
-        while (!handle.IsDone)
-        {
-            m_PatchMap[label] = handle.GetDownloadStatus().DownloadedBytes;
-            yield return null;
-        }
-
-        // 다운로드 완료
-        m_PatchMap[label] = handle.GetDownloadStatus().TotalBytes;
-        Addressables.Release(handle);
-    }
-
-    IEnumerator CheckUpdateSequence()
-    {
-        // 총 다운로드 파일 사이즈 계산
-        foreach (var label in m_Labels)
-        {
-            // 해당 라벨 파일 패치 확인
-            var handle = Addressables.GetDownloadSizeAsync(label);
-            yield return handle;
-
-            // 패치 파일 용량 기록
-            m_TotalPatchSize += handle.Result;
-        }
-
         // 업데이트 여부 확인
-        if (m_TotalPatchSize > decimal.Zero)
+        if (m_DownloadManager.PatchSize > decimal.Zero)
         {
             // 업데이트 패널 활성화
             m_ProcessUpdatePanel.SetActive(true);
 
             // 패치 파일 총 크기 표시
-            m_FileSizeText.text = GetFileSize(m_TotalPatchSize);
+            m_FileSizeText.text = GetFileSize(m_DownloadManager.PatchSize);
         }
         else
         {
             // 업데이트 없음
             m_CheckingUpdateText.text = "No Available Update";
 
+            // 로비 씬 전환
+            LoadingManager.LoadScene("Lobby");
+        }
+    }
+
+    void ChangeLobbyScene() => LoadingManager.LoadScene("Lobby");
+
+    void OnUpdated_Event(float downloadedRatio)
+    {
+        // UI 갱신
+        m_DownloadBar.Refresh(downloadedRatio);
+
+        // 다운로드 완료 여부 확인
+        if (Mathf.Approximately(downloadedRatio, 1))
+        {
             // 로비 씬 전환
             ChangeLobbyScene();
         }
