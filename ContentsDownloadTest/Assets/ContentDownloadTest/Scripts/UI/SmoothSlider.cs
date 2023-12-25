@@ -53,10 +53,10 @@ public class SmoothSlider : MonoBehaviour
         m_TargetValue = targetValue;
 
         // UI 갱신 작업 시작
-        UpdateLoadingBar().Forget();
+        UpdateValueTask().Forget();
     }
 
-    async UniTaskVoid UpdateLoadingBar()
+    async UniTaskVoid UpdateValueTask()
     {
         // 중복 작업 방지
         if (m_IsActivated) return;
