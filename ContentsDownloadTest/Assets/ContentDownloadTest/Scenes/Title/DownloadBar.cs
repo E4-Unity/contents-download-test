@@ -11,13 +11,13 @@ public class DownloadBar : SmoothSlider
     {
         base.Awake();
 
-        GetSlider().value = 0;
+        InitValue(0);
     }
 
     /* 메서드 */
-    protected override void OnValueUpdated_Event(float value)
+    protected override void UpdateValue(float value)
     {
-        base.OnValueUpdated_Event(value);
+        base.UpdateValue(value);
 
         // 다운로드 진행률
         m_DownloadRatioText.text = (int)(value * 100) + " %";

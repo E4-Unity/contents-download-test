@@ -5,6 +5,13 @@ public class LoadingBar : SmoothSlider
     {
         base.Awake();
 
-        GetSlider().value = 0;
+        InitValue(0);
+
+        SceneLoadingManagerBase.OnProgressUpdated += Refresh;
+    }
+
+    void OnDestroy()
+    {
+        SceneLoadingManagerBase.OnProgressUpdated -= Refresh;
     }
 }

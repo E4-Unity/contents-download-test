@@ -320,7 +320,7 @@ GameObject:
   - component: {fileID: 2116575943}
   - component: {fileID: 2116575944}
   m_Layer: 0
-  m_Name: Addressables Test
+  m_Name: Lobby Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -363,5 +363,5 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 519420032}
-  - {fileID: 2116575943}
   - {fileID: 668428340}
+  - {fileID: 2116575943}

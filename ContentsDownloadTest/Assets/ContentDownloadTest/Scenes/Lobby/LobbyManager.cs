@@ -1,18 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 public class LobbyManager : MonoBehaviour
 {
-    // Start is called before the first frame update
+    [SerializeField] AssetReferenceGameObject m_Target;
+
     void Start()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // 어드레서블 에셋 스폰
+        var target = Addressables.InstantiateAsync(m_Target);
     }
 }

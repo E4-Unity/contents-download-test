@@ -42,17 +42,15 @@ public class TitleManager : MonoBehaviour
             validLabels.Add(label.labelString);
         }
 
-        // Download Manager 생성
+        // Download Manager 초기화
         m_DownloadManager = new DownloadManager(validLabels);
+        m_DownloadManager.OnUpdated += OnUpdated_Event;
 
         // 다운로드 버튼 이벤트 바인딩
         m_DownloadButton.onClick.AddListener(OnDownloadButtonClick_Event);
 
         // 초기화
         Init();
-
-        // 이벤트 바인딩
-        m_DownloadManager.OnUpdated += OnUpdated_Event;
     }
 
     void Start()
@@ -81,9 +79,6 @@ public class TitleManager : MonoBehaviour
         // 패널 초기화
         m_CheckingUpdatePanel.SetActive(true);
         m_ProcessUpdatePanel.SetActive(false);
-
-        // 다운로드 UI 초기화
-        m_DownloadBar.Refresh(0);
     }
 
     void UpdateUI()
@@ -103,11 +98,11 @@ public class TitleManager : MonoBehaviour
             m_CheckingUpdateText.text = "No Available Update";
 
             // 로비 씬 전환
-            LoadingManager.LoadScene("Lobby");
+            ChangeLobbyScene();
         }
     }
 
-    void ChangeLobbyScene() => LoadingManager.LoadScene("Lobby");
+    void ChangeLobbyScene() => SceneLoadingManager.LoadScene(BuildScene.Lobby);
 
     void OnUpdated_Event(float downloadedRatio)
     {

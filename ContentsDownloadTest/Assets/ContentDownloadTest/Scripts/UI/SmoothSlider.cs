@@ -1,4 +1,3 @@
-using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,9 +18,6 @@ public class SmoothSlider : MonoBehaviour
     float m_TargetValue;
     bool m_IsActivated;
 
-    /* 이벤트 */
-    protected event Action<float> OnValueUpdated;
-
     /* MonoBehaviour */
     protected virtual void Awake()
     {
@@ -30,16 +26,14 @@ public class SmoothSlider : MonoBehaviour
         {
             m_Slider = GetComponentInChildren<Slider>();
         }
-
-        // 이벤트 바인딩
-        OnValueUpdated += OnValueUpdated_Event;
     }
 
     /* API */
+    public void InitValue(float initValue) => UpdateValue(initValue);
     public void Refresh(float downloadRatio) => SetTargetValue(downloadRatio);
 
     /* 메서드 */
-    protected virtual void OnValueUpdated_Event(float value)
+    protected virtual void UpdateValue(float value)
     {
         m_Slider.value = value;
     }
@@ -73,12 +67,12 @@ public class SmoothSlider : MonoBehaviour
             timer += Time.deltaTime;
             currentValue = Mathf.Lerp(startValue, m_TargetValue, timer / m_Interval);
 
-            OnValueUpdated?.Invoke(currentValue);
+            UpdateValue(currentValue);
 
             await UniTask.Yield();
         }
 
-        OnValueUpdated?.Invoke(m_TargetValue);
+        UpdateValue(m_TargetValue);
 
         // 작업 종료
         m_IsActivated = false;
